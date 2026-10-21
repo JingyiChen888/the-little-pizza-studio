@@ -25,7 +25,7 @@
     { name: 'Sauce', en: 'SAUCE', title: 'Spread the sauce', description: 'Choose a sauce, then press and drag to spread it across the pizza.', tip: 'Press and drag on the crust to spread your sauce' },
     { name: 'Cheese', en: 'CHEESE', title: 'Add the cheese', description: 'Press and drag to scatter cheese by hand. Your finished layer will look deliciously full.', tip: 'Drag over the pizza to scatter cheese' },
     { name: 'Toppings', en: 'TOPPINGS', title: 'Place your toppings', description: 'Choose an ingredient, then click the pizza. Use Move & edit to adjust it afterward.', tip: 'Click to place a topping, even over another topping' },
-    { name: 'Bake', en: 'BAKE', title: 'Bake your pizza', description: 'Your toppings stay in place while the crust and cheese turn golden.', tip: 'Set the timer, then start baking' },
+    { name: 'Bake', en: 'BAKE', title: 'Bake your pizza', description: 'Baking time changes the crust and cheese color while toppings stay in place.', tip: 'Set the timer, then start baking' },
     { name: 'Save', en: 'SAVE', title: 'Name your pizza', description: 'Give your handmade pizza a name and save it as an image.', tip: 'Give it a name, then download your image' }
   ];
   const TOPPINGS = [
@@ -79,6 +79,12 @@
   function canContinue() {
     return [Boolean(state.base), state.sauceStrokes.length > 0, state.cheeseDabs.length > 0, state.toppings.length > 0, state.baked, false][state.step];
   }
+  function bakeLevel(s) { return s.baked ? Math.max(0, Math.min(1, (Number(s.bakeTime) - 6) / 6)) : 0; }
+  function bakeFinish(minutes) {
+    if (minutes <= 7) return { name: 'Lightly baked', detail: 'A light crust with softly melted cheese' };
+    if (minutes <= 10) return { name: 'Golden brown', detail: 'A golden crust with a few toasted cheese spots' };
+    return { name: 'Well done', detail: 'A deeper brown crust with more toasted cheese' };
+  }
   function feedbackText() {
     if (state.step === 0) return state.base ? 'Crust selected. You can move on to the sauce.' : wasReset ? 'Pizza cleared. Choose a new crust to begin.' : 'Choose a crust to continue.';
     if (state.step === 1) return state.sauceStrokes.length ? 'Looking good! Add more if you like, then select Next for a full finish.' : 'Press and drag across the pizza to spread sauce.';
@@ -86,7 +92,7 @@
     if (state.step === 3) return state.toppingMode === 'edit'
       ? 'Select a topping to resize or rotate it, or drag it to move.'
       : `${state.toppings.length} toppings placed. Click anywhere on the pizza to add one, even over another topping.`;
-    if (state.step === 4) return state.baked ? 'Fresh from the oven! Select Next to name your pizza.' : 'Choose a baking time, then select Start baking.';
+    if (state.step === 4) return state.baked ? `${bakeFinish(state.bakeTime).name} at ${state.bakeTime} min. Select Next to name your pizza.` : `${state.bakeTime} min: ${bakeFinish(state.bakeTime).name}. Select Start baking to see the result.`;
     return 'Enter a name, then download the image to your device.';
   }
 
@@ -98,7 +104,7 @@
     if (state.step === 1) return `<p class="tool-section-label">02 / CHOOSE A SAUCE</p><div class="choice-list">${SAUCES.map(s => `<button class="choice-card ${state.sauce === s.id ? 'active' : ''}" type="button" data-sauce="${s.id}" aria-pressed="${state.sauce === s.id}"><span class="sauce-preview ${s.id}"></span><strong>${s.name}</strong><small>${s.sub}</small></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="brush-size">Brush width</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Try spreading from the center outward. A light spread fills out beautifully when you move on.</div>`;
     if (state.step === 2) return `<p class="tool-section-label">03 / MOZZARELLA</p><div class="choice-list"><div class="choice-card active" aria-label="Mozzarella cheese"><canvas class="ingredient-thumb" data-topping-thumb="mozzarella" width="130" height="130"></canvas><strong>Hand-scattered cheese</strong><small>Add as much as you like</small></div></div><div class="control-box"><div class="control-line"><label for="brush-size">Cheese brush size</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Press and drag to scatter cheese. The finished layer will be generous, with hints of sauce showing through.</div>`;
     if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="placement-mode" role="group" aria-label="Topping action"><button class="small-tool ${state.toppingMode === 'place' ? 'active' : ''}" type="button" data-topping-mode="place" aria-pressed="${state.toppingMode === 'place'}">Place toppings</button><button class="small-tool ${state.toppingMode === 'edit' ? 'active' : ''}" type="button" data-topping-mode="edit" aria-pressed="${state.toppingMode === 'edit'}">Move & edit</button></div><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">${state.toppingMode === 'edit' ? 'Click a topping to select it; drag to move it.' : state.activeTopping === 'olive' ? 'Each click adds one black olive, even on another topping.' : 'Click the pizza to add a topping, including overlapping placements.'}</div>`;
-    if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? 'Fresh from the oven!' : 'Watch your pizza turn golden'}</strong><small>The crust browns while toppings stay in place</small></div><div class="control-line"><label for="bake-time">Baking time</label><output id="bake-time-value">${state.bakeTime} min</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ Baked' : 'Start baking →'}</button><div class="tool-hint">This is a quick game animation; no need to wait ${state.bakeTime} real minutes.</div>`;
+    if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? bakeFinish(state.bakeTime).name : 'Choose your bake'}</strong><small id="bake-description">${bakeFinish(state.bakeTime).detail}</small></div><div class="control-line"><label for="bake-time">Baking time</label><output id="bake-time-value">${state.bakeTime} min</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ Baked' : 'Start baking →'}</button><div id="bake-preview" class="tool-hint">${bakeFinish(state.bakeTime).detail}. Baking animation takes only a moment.</div>`;
     return `<p class="tool-section-label">06 / YOUR PIZZA</p><div class="bake-card"><span class="oven-emoji">✳</span><strong>A pizza made by you</strong><small>Every topping is right where you placed it</small></div><label class="name-label" for="pizza-name">Name your pizza</label><input id="pizza-name" class="name-input" type="text" maxlength="26" placeholder="e.g. Sunday Special"><button id="save-action" class="save-action" type="button">Download your pizza ↓</button><div class="tool-hint">Download a PNG with your toppings and your pizza name.</div>`;
   }
   function renderThumbs() {
@@ -161,7 +167,17 @@
       const imageSize = s.base === 'thin' ? 535 : 570;
       c.save();
       c.shadowColor = '#5d381e73'; c.shadowBlur = 23; c.shadowOffsetY = 11;
-      if (s.base === 'wheat') c.filter = 'sepia(38%) saturate(82%) brightness(91%)';
+      if (baked) {
+        const toast = bakeLevel(s);
+        if (toast < .5 && rawDough.complete && rawDough.naturalWidth) {
+          if (s.base === 'wheat') c.filter = 'sepia(38%) saturate(82%) brightness(91%)';
+          c.drawImage(rawDough, CENTER.x-imageSize/2, CENTER.y-imageSize/2, imageSize, imageSize);
+          c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
+          c.globalAlpha = .35 + toast * 1.3;
+        }
+        c.filter = `brightness(${(1.12 - toast * .30).toFixed(2)}) sepia(${Math.round(5 + toast * 35)}%) saturate(${Math.round(98 + toast * 25)}%) contrast(${Math.round(96 + toast * 12)}%)`;
+        if (s.base === 'wheat') c.filter += ' sepia(25%) brightness(93%)';
+      } else if (s.base === 'wheat') c.filter = 'sepia(38%) saturate(82%) brightness(91%)';
       c.drawImage(doughImage, CENTER.x-imageSize/2, CENTER.y-imageSize/2, imageSize, imageSize);
       c.restore();
       return;
@@ -236,12 +252,22 @@
   }
   function drawCheeseDab(c, s, d, i) {
     c.save(); c.translate(d.x,d.y); c.rotate(d.a); const sz=d.size;
+    const toast = bakeLevel(s);
+    if (s.baked) c.filter = `brightness(${(1.07 - toast * .17).toFixed(2)}) sepia(${Math.round(toast * 20)}%) saturate(${Math.round(100 + toast * 18)}%)`;
     if (paintStamps.complete && paintStamps.naturalWidth) {
       const cell=paintStamps.naturalWidth/2, drawSize=sz*1.8;
       c.globalAlpha=.88; c.drawImage(paintStamps,cell,0,cell,paintStamps.naturalHeight,-drawSize/2,-drawSize/2,drawSize,drawSize);
-      if(s.baked && i%5===0){c.fillStyle='#d8a86285';c.beginPath();c.ellipse(sz*.04,-sz*.08,sz*.17,sz*.08,.4,0,Math.PI*2);c.fill();}
     } else {
       c.shadowColor='#754b302c'; c.shadowBlur=3; c.fillStyle=s.baked?'#f7e5bb':'#fff5dc'; c.beginPath(); c.moveTo(-sz*.56,-sz*.23); c.quadraticCurveTo(-sz*.15,-sz*.46,sz*.25,-sz*.18); c.lineTo(sz*.58,sz*.05); c.quadraticCurveTo(sz*.25,sz*.42,-sz*.2,sz*.26); c.closePath(); c.fill();
+    }
+    if (s.baked && i % Math.round(12 - toast * 9) === 0) {
+      c.filter = 'none'; c.globalAlpha = 1;
+      const radius = sz * (.13 + toast * .05);
+      const spot = c.createRadialGradient(sz*.04,-sz*.08,0,sz*.04,-sz*.08,radius);
+      spot.addColorStop(0, `rgba(151, 82, 28, ${(.18 + toast * .28).toFixed(2)})`);
+      spot.addColorStop(1, 'rgba(151, 82, 28, 0)');
+      c.fillStyle = spot;
+      c.beginPath(); c.ellipse(sz*.04,-sz*.08,radius,radius*.7,.4,0,Math.PI*2); c.fill();
     }
     c.restore();
   }
@@ -348,7 +374,7 @@
   });
   document.querySelector('#tool-content').addEventListener('input',e=>{
     if(e.target.id==='brush-size'){state.brushSize=Number(e.target.value);$('#brush-size-value').textContent=`${state.brushSize}px`;persist();}
-    if(e.target.id==='bake-time'){state.bakeTime=Number(e.target.value);$('#bake-time-value').textContent=`${state.bakeTime} min`;persist();}
+    if(e.target.id==='bake-time'){state.bakeTime=Number(e.target.value);$('#bake-time-value').textContent=`${state.bakeTime} min`;$('#bake-description').textContent=bakeFinish(state.bakeTime).detail;$('#bake-preview').textContent=`${bakeFinish(state.bakeTime).detail}. Baking animation takes only a moment.`;$('#feedback').textContent=feedbackText();persist();}
     if(e.target.id==='topping-size'){if(!sizeSession&&state.selected>=0){remember();sizeSession=true;}const value=Number(e.target.value);state.toppingSize=value;if(state.selected>=0)state.toppings[state.selected].size=value/100;$('#topping-size-value').textContent=`${value}%`;persist();renderCanvas();}
     if(e.target.id==='pizza-name'){state.name=e.target.value;persist();}
   });
