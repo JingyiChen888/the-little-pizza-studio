@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9e4d5">
+  <meta name="description" content="从饼底到出炉，亲手制作一张独一无二的披萨。">
+  <title>小小披萨工坊</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="masthead">
+      <div class="identity"><span class="identity-symbol" aria-hidden="true">◒</span><div><strong>小小披萨工坊</strong><small>THE LITTLE PIZZA STUDIO</small></div></div>
+      <div class="masthead-actions"><span class="studio-tag">自己动手，慢慢做好吃的。</span><button id="restart" class="text-button" type="button">重新开始 ↗</button></div>
+    </header>
+
+    <main>
+      <section class="intro"><div><p class="eyebrow">HANDMADE, ONE STEP AT A TIME</p><h1>今天的披萨，<em>由你来做。</em></h1><p class="intro-copy">选一块饼底，慢慢抹酱、铺芝士，再把喜欢的配料亲手放上去。</p></div><span class="intro-mark" aria-hidden="true">✳</span></section>
+
+      <nav class="progress" aria-label="制作步骤"><ol id="progress-list"></ol></nav>
+
+      <div class="workspace">
+        <section class="workbench" aria-labelledby="canvas-title"><div class="bench-heading"><div><span class="bench-kicker">YOUR WORKBENCH / <span id="step-counter">01</span></span><h2 id="canvas-title">选一块喜欢的饼底</h2></div><div class="bench-actions"><div id="work-status" class="work-status">等待开始</div><button id="undo" class="undo-button" type="button" disabled>撤销 ↶</button></div></div><div class="canvas-holder"><canvas id="pizza-canvas" width="900" height="700" aria-label="披萨制作画布。选择工具后在画布上拖动或点击操作。"></canvas><div id="canvas-tip" class="canvas-tip">先从右边选择饼底</div><div id="oven-overlay" class="oven-overlay" hidden><span>♨</span><strong>正在烘烤...</strong></div></div><div class="bench-foot"><span>✦ 你放下的配料，就是披萨上的样子</span><span id="piece-count">0 块配料</span></div></section>
+
+        <aside class="toolbox" aria-labelledby="tool-title"><div class="toolbox-head"><span id="tool-step">STEP 01 / 06</span><h2 id="tool-title">挑选饼底</h2><p id="tool-description">从这里开始，选择你想做的披萨。</p></div><div id="tool-content" class="tool-content"></div><div class="toolbox-bottom"><p id="feedback" role="status" aria-live="polite">选好饼底后，你可以进入下一步。</p><div class="navigation"><button id="back" type="button" class="back-button" disabled>← 上一步</button><button id="next" type="button" class="next-button" disabled>下一步 <span>→</span></button></div></div></aside>
+      </div>
+      <p class="below-note">A LITTLE MESS MAKES IT YOURS <span>✴</span> 每一块配料都由你亲手摆放。</p>
+    </main>
+    <footer><span>THE LITTLE PIZZA STUDIO © 2026</span><span>一张披萨，一点想象。</span></footer>
+  </div>
+  <dialog id="restart-dialog"><div class="dialog-card"><h2>重新做一张披萨？</h2><p>当前的制作进度会被清空。你也可以先保存作品图片。</p><div><button id="cancel-restart" type="button" class="back-button">继续制作</button><button id="confirm-restart" type="button" class="next-button">重新开始</button></div></div></dialog>
+</body>
+</html>
