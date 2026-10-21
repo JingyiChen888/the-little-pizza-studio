@@ -11,6 +11,8 @@
   bakedDough.src = 'assets/dough-baked.png';
   const paintStamps = new Image();
   paintStamps.src = 'assets/sauce-cheese-stamps.png';
+  const alternateSauceStamps = new Image();
+  alternateSauceStamps.src = 'assets/pesto-white-sauce-stamps.png';
   const singleOlive = new Image();
   singleOlive.src = 'assets/olive-single.png';
   const $ = (selector) => document.querySelector(selector);
@@ -185,16 +187,26 @@
       else { c.beginPath(); c.moveTo(stroke.points[0].x,stroke.points[0].y); for(const p of stroke.points.slice(1)) c.lineTo(p.x,p.y); c.stroke(); }
       c.globalAlpha=.14; c.strokeStyle=stroke.kind==='cream'?'#fff6dc':'#f8c080'; c.lineWidth=(stroke.width||58)*.68;
       if(stroke.points.length>1){c.beginPath();c.moveTo(stroke.points[0].x,stroke.points[0].y);for(const p of stroke.points.slice(1))c.lineTo(p.x,p.y);c.stroke();}
-      if (stroke.kind === 'tomato' && paintStamps.complete && paintStamps.naturalWidth) {
-        c.save(); c.globalAlpha = .42;
-        const cell = paintStamps.naturalWidth / 2;
+      const stampAtlas = stroke.kind === 'tomato' ? paintStamps : alternateSauceStamps;
+      if (stampAtlas.complete && stampAtlas.naturalWidth) {
+        c.save(); c.globalAlpha = stroke.kind === 'cream' ? .36 : .42;
+        const cell = stampAtlas.naturalWidth / 2;
+        const sourceX = stroke.kind === 'cream' ? cell : 0;
         let travelled = 0;
         for (let j = 0; j < stroke.points.length; j++) {
           const p = stroke.points[j];
           if (j) travelled += Math.hypot(p.x-stroke.points[j-1].x,p.y-stroke.points[j-1].y);
           if (j === 0 || travelled > 18) {
             const size = (stroke.width || 58) * (1.22 + random(j+71+(stroke.seed||0))*.23);
-            c.drawImage(paintStamps,0,0,cell,paintStamps.naturalHeight,p.x-size/2,p.y-size/2,size,size);
+            if (stroke.kind === 'tomato') {
+              c.drawImage(stampAtlas,sourceX,0,cell,stampAtlas.naturalHeight,p.x-size/2,p.y-size/2,size,size);
+            } else {
+              c.save();
+              c.translate(p.x,p.y);
+              c.rotate((random(j+193+(stroke.seed||0))-.5)*Math.PI);
+              c.drawImage(stampAtlas,sourceX,0,cell,stampAtlas.naturalHeight,-size/2,-size/2,size,size);
+              c.restore();
+            }
             travelled = 0;
           }
         }
@@ -357,6 +369,7 @@
   rawDough.addEventListener('load',renderCanvas);
   bakedDough.addEventListener('load',renderCanvas);
   paintStamps.addEventListener('load',renderCanvas);
+  alternateSauceStamps.addEventListener('load',renderCanvas);
   singleOlive.addEventListener('load',()=>{renderThumbs();renderCanvas();});
   renderUI();renderCanvas();
 })();
