@@ -22,7 +22,7 @@
     { name: 'Crust', en: 'DOUGH', title: 'Choose your crust', description: 'Classic, thin, or whole wheat: choose the starting point for your pizza.', tip: 'Choose a crust on the right' },
     { name: 'Sauce', en: 'SAUCE', title: 'Spread the sauce', description: 'Choose a sauce, then press and drag to spread it across the pizza.', tip: 'Press and drag on the crust to spread your sauce' },
     { name: 'Cheese', en: 'CHEESE', title: 'Add the cheese', description: 'Press and drag to scatter cheese by hand. Your finished layer will look deliciously full.', tip: 'Drag over the pizza to scatter cheese' },
-    { name: 'Toppings', en: 'TOPPINGS', title: 'Place your toppings', description: 'Choose an ingredient, then click the pizza. Drag, rotate, or resize it afterward.', tip: 'Choose a topping, click to place it, or drag one to move it' },
+    { name: 'Toppings', en: 'TOPPINGS', title: 'Place your toppings', description: 'Choose an ingredient, then click the pizza. Use Move & edit to adjust it afterward.', tip: 'Click to place a topping, even over another topping' },
     { name: 'Bake', en: 'BAKE', title: 'Bake your pizza', description: 'Your toppings stay in place while the crust and cheese turn golden.', tip: 'Set the timer, then start baking' },
     { name: 'Save', en: 'SAVE', title: 'Name your pizza', description: 'Give your handmade pizza a name and save it as an image.', tip: 'Give it a name, then download your image' }
   ];
@@ -47,12 +47,14 @@
     { id: 'wheat', name: 'Whole wheat', sub: 'Warm and nutty' }
   ];
 
-  const freshState = () => ({ textureVersion: 2, step: 0, base: null, sauce: 'tomato', sauceStrokes: [], cheeseDabs: [], toppings: [], activeTopping: 'mushroom', selected: -1, toppingSize: 100, brushSize: 58, bakeTime: 8, baked: false, name: '' });
+  const freshState = () => ({ textureVersion: 2, step: 0, base: null, sauce: 'tomato', sauceStrokes: [], cheeseDabs: [], toppings: [], activeTopping: 'mushroom', toppingMode: 'place', selected: -1, toppingSize: 100, brushSize: 58, bakeTime: 8, baked: false, name: '' });
   function restore() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (!saved || !Array.isArray(saved.sauceStrokes) || !Array.isArray(saved.cheeseDabs) || !Array.isArray(saved.toppings)) return freshState();
       const restored = { ...freshState(), ...saved, selected: -1, step: Math.max(0, Math.min(5, Number(saved.step) || 0)) };
+      if (restored.step === 0 && (restored.sauceStrokes.length || restored.cheeseDabs.length || restored.toppings.length || restored.baked)) return freshState();
+      if (restored.toppingMode !== 'edit') restored.toppingMode = 'place';
       if (saved.textureVersion !== 2) restored.cheeseDabs = restored.cheeseDabs.map(d => ({ ...d, size: d.size * 2.3 }));
       restored.textureVersion = 2;
       if (restored.step < 4) restored.baked = false;
@@ -66,6 +68,7 @@
   let pointerMoved = false;
   let isBaking = false;
   let sizeSession = false;
+  let wasReset = false;
 
   function snapshot() { return JSON.stringify(state); }
   function remember() { undoStack.push(snapshot()); if (undoStack.length > 50) undoStack.shift(); }
@@ -75,10 +78,12 @@
     return [Boolean(state.base), state.sauceStrokes.length > 0, state.cheeseDabs.length > 0, state.toppings.length > 0, state.baked, false][state.step];
   }
   function feedbackText() {
-    if (state.step === 0) return state.base ? 'Crust selected. You can move on to the sauce.' : 'Choose a crust to continue.';
+    if (state.step === 0) return state.base ? 'Crust selected. You can move on to the sauce.' : wasReset ? 'Pizza cleared. Choose a new crust to begin.' : 'Choose a crust to continue.';
     if (state.step === 1) return state.sauceStrokes.length ? 'Looking good! Add more if you like, then select Next for a full finish.' : 'Press and drag across the pizza to spread sauce.';
     if (state.step === 2) return state.cheeseDabs.length ? 'Cheese is on! Add a little more, or select Next for a full finish.' : 'Drag your finger or mouse to scatter cheese.';
-    if (state.step === 3) return state.toppings.length ? `${state.toppings.length} toppings placed. Select one on the pizza to adjust it.` : 'Choose a topping on the right, then click the pizza to place it.';
+    if (state.step === 3) return state.toppingMode === 'edit'
+      ? 'Select a topping to resize or rotate it, or drag it to move.'
+      : `${state.toppings.length} toppings placed. Click anywhere on the pizza to add one, even over another topping.`;
     if (state.step === 4) return state.baked ? 'Fresh from the oven! Select Next to name your pizza.' : 'Choose a baking time, then select Start baking.';
     return 'Enter a name, then download the image to your device.';
   }
@@ -90,7 +95,7 @@
     if (state.step === 0) return `<p class="tool-section-label">01 / CHOOSE A CRUST</p><div class="choice-list dough-list">${BASES.map(b => `<button class="choice-card ${state.base === b.id ? 'active' : ''}" type="button" data-base="${b.id}" aria-pressed="${state.base === b.id}"><span class="dough-preview ${b.id}"></span><span><strong>${b.name}</strong><small>${b.sub}</small></span></button>`).join('')}</div><div class="tool-hint">Your choice will appear on the workbench right away.</div>`;
     if (state.step === 1) return `<p class="tool-section-label">02 / CHOOSE A SAUCE</p><div class="choice-list">${SAUCES.map(s => `<button class="choice-card ${state.sauce === s.id ? 'active' : ''}" type="button" data-sauce="${s.id}" aria-pressed="${state.sauce === s.id}"><span class="sauce-preview ${s.id}"></span><strong>${s.name}</strong><small>${s.sub}</small></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="brush-size">Brush width</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Try spreading from the center outward. A light spread fills out beautifully when you move on.</div>`;
     if (state.step === 2) return `<p class="tool-section-label">03 / MOZZARELLA</p><div class="choice-list"><div class="choice-card active" aria-label="Mozzarella cheese"><canvas class="ingredient-thumb" data-topping-thumb="mozzarella" width="130" height="130"></canvas><strong>Hand-scattered cheese</strong><small>Add as much as you like</small></div></div><div class="control-box"><div class="control-line"><label for="brush-size">Cheese brush size</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Press and drag to scatter cheese. The finished layer will be generous, with hints of sauce showing through.</div>`;
-    if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">${state.activeTopping === 'olive' ? 'Each click places one black olive. Click again to add more.' : 'The menu and pizza use the same topping artwork. Click to place, drag to move, then resize or rotate.'}</div>`;
+    if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="placement-mode" role="group" aria-label="Topping action"><button class="small-tool ${state.toppingMode === 'place' ? 'active' : ''}" type="button" data-topping-mode="place" aria-pressed="${state.toppingMode === 'place'}">Place toppings</button><button class="small-tool ${state.toppingMode === 'edit' ? 'active' : ''}" type="button" data-topping-mode="edit" aria-pressed="${state.toppingMode === 'edit'}">Move & edit</button></div><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">${state.toppingMode === 'edit' ? 'Click a topping to select it; drag to move it.' : state.activeTopping === 'olive' ? 'Each click adds one black olive, even on another topping.' : 'Click the pizza to add a topping, including overlapping placements.'}</div>`;
     if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? 'Fresh from the oven!' : 'Watch your pizza turn golden'}</strong><small>The crust browns while toppings stay in place</small></div><div class="control-line"><label for="bake-time">Baking time</label><output id="bake-time-value">${state.bakeTime} min</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ Baked' : 'Start baking →'}</button><div class="tool-hint">This is a quick game animation; no need to wait ${state.bakeTime} real minutes.</div>`;
     return `<p class="tool-section-label">06 / YOUR PIZZA</p><div class="bake-card"><span class="oven-emoji">✳</span><strong>A pizza made by you</strong><small>Every topping is right where you placed it</small></div><label class="name-label" for="pizza-name">Name your pizza</label><input id="pizza-name" class="name-input" type="text" maxlength="26" placeholder="e.g. Sunday Special"><button id="save-action" class="save-action" type="button">Download your pizza ↓</button><div class="tool-hint">Download a PNG with your toppings and your pizza name.</div>`;
   }
@@ -111,16 +116,19 @@
     $('#tool-step').textContent = `STEP ${String(state.step + 1).padStart(2, '0')} / 06`;
     $('#tool-title').textContent = stage.name;
     $('#tool-description').textContent = stage.description;
-    $('#canvas-tip').textContent = state.step === 4 && state.baked ? 'All baked! Select Next to name your pizza' : stage.tip;
+    $('#canvas-tip').textContent = state.step === 4 && state.baked ? 'All baked! Select Next to name your pizza' : state.step === 3 && state.toppingMode === 'edit' ? 'Select a topping to move or edit it' : stage.tip;
     $('#canvas-tip').hidden = state.step === 5;
     $('#work-status').textContent = state.step === 5 ? 'Pizza complete' : canContinue() ? 'Ready for the next step' : 'In progress';
     $('#piece-count').textContent = `${state.toppings.length} toppings`;
     $('#feedback').textContent = feedbackText();
     $('#back').disabled = state.step === 0 || isBaking;
+    $('#back').textContent = state.step === 1 ? '← Start over' : '← Back';
     $('#undo').disabled = undoStack.length === 0 || isBaking;
     $('#next').disabled = !canContinue() || isBaking;
     $('#next').innerHTML = state.step === 5 ? 'Complete' : 'Next <span>→</span>';
     $('#tool-content').innerHTML = toolMarkup();
+    $('#tool-content').classList.toggle('placing-topping', state.step === 3 && state.toppingMode === 'place');
+    canvas.style.cursor = state.step === 3 && state.toppingMode === 'edit' ? 'grab' : 'crosshair';
     if (state.step === 5) $('#pizza-name').value = state.name;
     renderThumbs();
   }
@@ -281,8 +289,13 @@
     const p=canvasPoint(e);
     if(state.step===1 && insidePizza(p,6)){remember();state.sauceStrokes.push({kind:state.sauce,width:state.brushSize,points:[confinePoint(p)]});pointerMode='sauce';lastPaintPoint=p;canvas.setPointerCapture(e.pointerId);renderCanvas();e.preventDefault();return;}
     if(state.step===2 && insidePizza(p,6)){remember();addCheese(p);pointerMode='cheese';lastPaintPoint=p;canvas.setPointerCapture(e.pointerId);renderCanvas();e.preventDefault();return;}
-    if(state.step===3){const hit=hitTopping(p);if(hit>=0){state.selected=hit;pointerMode='drag';pointerMoved=false;lastPaintPoint=p;canvas.setPointerCapture(e.pointerId);renderUI();renderCanvas();e.preventDefault();return;}
-      if(insidePizza(p,4)){remember();const point=confinePoint(p);state.toppings.push({id:state.activeTopping,x:point.x,y:point.y,size:state.toppingSize/100,angle:0});state.selected=state.toppings.length-1;commit();e.preventDefault();return;}
+    if(state.step===3){
+      if(state.toppingMode==='edit'){
+        const hit=hitTopping(p);
+        if(hit>=0){state.selected=hit;pointerMode='drag';pointerMoved=false;lastPaintPoint=p;canvas.setPointerCapture(e.pointerId);renderUI();renderCanvas();e.preventDefault();return;}
+      } else if(insidePizza(p,4)){
+        remember();const point=confinePoint(p);state.toppings.push({id:state.activeTopping,x:point.x,y:point.y,size:state.toppingSize/100,angle:0});state.selected=-1;commit();e.preventDefault();return;
+      }
       state.selected=-1;renderUI();renderCanvas();}
   }
   function onPointerMove(e) {
@@ -293,7 +306,12 @@
   }
   function onPointerUp() { if(!pointerMode)return;pointerMode=null;lastPaintPoint=null;pointerMoved=false;commit(); }
 
-  function changeStep(to) { if(to<0||to>5||isBaking)return;if(to<4&&state.baked){remember();state.baked=false;}state.step=to;state.selected=-1;commit(); }
+  function resetPizza() {
+    state=freshState();undoStack=[];pointerMode=null;lastPaintPoint=null;pointerMoved=false;sizeSession=false;wasReset=true;
+    $('#oven-overlay').hidden=true;
+    commit();
+  }
+  function changeStep(to) { if(to<0||to>5||isBaking)return;if(to===0){resetPizza();return;}if(to<4&&state.baked){remember();state.baked=false;}state.step=to;state.selected=-1;commit(); }
   function undo() { if(!undoStack.length || isBaking)return;state=JSON.parse(undoStack.pop());commit(); }
   function downloadImage() {
     const name=($('#pizza-name')?.value||'').trim()||'My Pizza';state.name=name;persist();
@@ -308,10 +326,11 @@
   }
 
   document.querySelector('#tool-content').addEventListener('click',e=>{
-    const base=e.target.closest('[data-base]');if(base){remember();state.base=base.dataset.base;commit();return;}
+    const base=e.target.closest('[data-base]');if(base){remember();state.base=base.dataset.base;wasReset=false;commit();return;}
     const sauce=e.target.closest('[data-sauce]');if(sauce){state.sauce=sauce.dataset.sauce;commit();return;}
-    const topping=e.target.closest('[data-topping]');if(topping){state.activeTopping=topping.dataset.topping;state.selected=-1;commit();return;}
-    const edit=e.target.closest('[data-edit]');if(edit){if(state.selected<0){$('#feedback').textContent='Select a topping on the pizza before editing it.';return;}remember();const item=state.toppings[state.selected];if(edit.dataset.edit==='rotate-left')item.angle-=Math.PI/12;if(edit.dataset.edit==='rotate-right')item.angle+=Math.PI/12;if(edit.dataset.edit==='remove'){state.toppings.splice(state.selected,1);state.selected=-1;}commit();return;}
+    const mode=e.target.closest('[data-topping-mode]');if(mode){state.toppingMode=mode.dataset.toppingMode;state.selected=-1;commit();return;}
+    const topping=e.target.closest('[data-topping]');if(topping){state.activeTopping=topping.dataset.topping;state.toppingMode='place';state.selected=-1;commit();return;}
+    const edit=e.target.closest('[data-edit]');if(edit){if(state.selected<0){$('#feedback').textContent='Choose Move & edit, then select a topping first.';return;}remember();const item=state.toppings[state.selected];if(edit.dataset.edit==='rotate-left')item.angle-=Math.PI/12;if(edit.dataset.edit==='rotate-right')item.angle+=Math.PI/12;if(edit.dataset.edit==='remove'){state.toppings.splice(state.selected,1);state.selected=-1;}commit();return;}
     if(e.target.closest('#bake-action')){if(state.baked||isBaking)return;remember();isBaking=true;$('#oven-overlay').hidden=false;renderUI();setTimeout(()=>{state.baked=true;isBaking=false;$('#oven-overlay').hidden=true;commit();},1500);return;}
     if(e.target.closest('#save-action'))downloadImage();
   });
@@ -328,7 +347,7 @@
   $('#next').addEventListener('click',()=>{if(canContinue())changeStep(state.step+1);});
   $('#restart').addEventListener('click',()=>$('#restart-dialog').showModal());
   $('#cancel-restart').addEventListener('click',()=>$('#restart-dialog').close());
-  $('#confirm-restart').addEventListener('click',()=>{state=freshState();undoStack=[];persist();$('#restart-dialog').close();commit();});
+  $('#confirm-restart').addEventListener('click',()=>{$('#restart-dialog').close();resetPizza();});
   canvas.addEventListener('pointerdown',onPointerDown);
   canvas.addEventListener('pointermove',onPointerMove);
   canvas.addEventListener('pointerup',onPointerUp);
