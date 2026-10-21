@@ -107,7 +107,7 @@
     $('#tool-step').textContent = `STEP ${String(state.step + 1).padStart(2, '0')} / 06`;
     $('#tool-title').textContent = stage.name;
     $('#tool-description').textContent = stage.description;
-    $('#canvas-tip').textContent = stage.tip;
+    $('#canvas-tip').textContent = state.step === 4 && state.baked ? '烤好啦，点击下一步给作品起名字' : stage.tip;
     $('#canvas-tip').hidden = state.step === 5;
     $('#work-status').textContent = state.step === 5 ? '完成作品' : canContinue() ? '可以进入下一步' : '正在制作';
     $('#piece-count').textContent = `${state.toppings.length} 块配料`;
