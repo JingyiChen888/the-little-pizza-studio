@@ -17,11 +17,11 @@ Then open <http://localhost:8000>. No installation or account is required.
 1. Choose a classic, thin, or whole wheat crust.
 2. Select a sauce, then press and drag on the pizza to spread it.
 3. Press and drag to scatter cheese.
-4. Choose a topping and click the pizza to place it. Select a placed topping to resize, rotate, or remove it; drag it to reposition.
+4. Choose a topping and click the pizza to place it. Each click adds one black olive when that topping is selected. Select a placed topping to resize, rotate, or remove it; drag it to reposition.
 5. Choose a baking time and select **Start baking**.
 6. Name your pizza and download its PNG image.
 
-Sauce and cheese respond to each brush gesture during their steps. When the player moves on, each layer fills out to give the finished pizza a generous, appetizing look. Toppings always stay exactly where the player placed them.
+Sauce and cheese respond to each brush gesture during their steps. When the player moves on, the game fills remaining gaps using the same brush stamps and sizes as the player's marks. Toppings always stay exactly where the player placed them.
 
 The player advances with **Next**. **Back**, **Undo**, and **Start over** are available for changes. Progress is saved in the current browser's local storage. Baking time is a visual game choice, so no real-time wait is required.
 
@@ -30,4 +30,4 @@ The player advances with **Next**. **Back**, **Undo**, and **Start over** are av
 - `dist/`: the playable site and image assets.
 - `references/`: visual direction and asset notes.
 
-The crust, sauce and cheese textures, and topping artwork were generated with OpenAI ImageGen. Topping buttons and the pizza use the same image atlas, so a topping keeps its appearance when placed.
+The crust, sauce and cheese textures, topping atlas, and single-olive sprite were generated with OpenAI ImageGen. Topping buttons and the pizza use the same asset for each topping, so it keeps its appearance when placed.

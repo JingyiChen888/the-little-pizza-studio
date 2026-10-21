@@ -11,6 +11,8 @@
   bakedDough.src = 'assets/dough-baked.png';
   const paintStamps = new Image();
   paintStamps.src = 'assets/sauce-cheese-stamps.png';
+  const singleOlive = new Image();
+  singleOlive.src = 'assets/olive-single.png';
   const $ = (selector) => document.querySelector(selector);
   const WIDTH = 900;
   const HEIGHT = 700;
@@ -45,12 +47,14 @@
     { id: 'wheat', name: 'Whole wheat', sub: 'Warm and nutty' }
   ];
 
-  const freshState = () => ({ step: 0, base: null, sauce: 'tomato', sauceStrokes: [], cheeseDabs: [], toppings: [], activeTopping: 'mushroom', selected: -1, toppingSize: 100, brushSize: 58, bakeTime: 8, baked: false, name: '' });
+  const freshState = () => ({ textureVersion: 2, step: 0, base: null, sauce: 'tomato', sauceStrokes: [], cheeseDabs: [], toppings: [], activeTopping: 'mushroom', selected: -1, toppingSize: 100, brushSize: 58, bakeTime: 8, baked: false, name: '' });
   function restore() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (!saved || !Array.isArray(saved.sauceStrokes) || !Array.isArray(saved.cheeseDabs) || !Array.isArray(saved.toppings)) return freshState();
       const restored = { ...freshState(), ...saved, selected: -1, step: Math.max(0, Math.min(5, Number(saved.step) || 0)) };
+      if (saved.textureVersion !== 2) restored.cheeseDabs = restored.cheeseDabs.map(d => ({ ...d, size: d.size * 2.3 }));
+      restored.textureVersion = 2;
       if (restored.step < 4) restored.baked = false;
       return restored;
     } catch { return freshState(); }
@@ -86,7 +90,7 @@
     if (state.step === 0) return `<p class="tool-section-label">01 / CHOOSE A CRUST</p><div class="choice-list dough-list">${BASES.map(b => `<button class="choice-card ${state.base === b.id ? 'active' : ''}" type="button" data-base="${b.id}" aria-pressed="${state.base === b.id}"><span class="dough-preview ${b.id}"></span><span><strong>${b.name}</strong><small>${b.sub}</small></span></button>`).join('')}</div><div class="tool-hint">Your choice will appear on the workbench right away.</div>`;
     if (state.step === 1) return `<p class="tool-section-label">02 / CHOOSE A SAUCE</p><div class="choice-list">${SAUCES.map(s => `<button class="choice-card ${state.sauce === s.id ? 'active' : ''}" type="button" data-sauce="${s.id}" aria-pressed="${state.sauce === s.id}"><span class="sauce-preview ${s.id}"></span><strong>${s.name}</strong><small>${s.sub}</small></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="brush-size">Brush width</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Try spreading from the center outward. A light spread fills out beautifully when you move on.</div>`;
     if (state.step === 2) return `<p class="tool-section-label">03 / MOZZARELLA</p><div class="choice-list"><div class="choice-card active" aria-label="Mozzarella cheese"><canvas class="ingredient-thumb" data-topping-thumb="mozzarella" width="130" height="130"></canvas><strong>Hand-scattered cheese</strong><small>Add as much as you like</small></div></div><div class="control-box"><div class="control-line"><label for="brush-size">Cheese brush size</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Press and drag to scatter cheese. The finished layer will be generous, with hints of sauce showing through.</div>`;
-    if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">The menu and pizza use the same topping artwork. Click to place, drag to move, then resize or rotate.</div>`;
+    if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">${state.activeTopping === 'olive' ? 'Each click places one black olive. Click again to add more.' : 'The menu and pizza use the same topping artwork. Click to place, drag to move, then resize or rotate.'}</div>`;
     if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? 'Fresh from the oven!' : 'Watch your pizza turn golden'}</strong><small>The crust browns while toppings stay in place</small></div><div class="control-line"><label for="bake-time">Baking time</label><output id="bake-time-value">${state.bakeTime} min</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ Baked' : 'Start baking →'}</button><div class="tool-hint">This is a quick game animation; no need to wait ${state.bakeTime} real minutes.</div>`;
     return `<p class="tool-section-label">06 / YOUR PIZZA</p><div class="bake-card"><span class="oven-emoji">✳</span><strong>A pizza made by you</strong><small>Every topping is right where you placed it</small></div><label class="name-label" for="pizza-name">Name your pizza</label><input id="pizza-name" class="name-input" type="text" maxlength="26" placeholder="e.g. Sunday Special"><button id="save-action" class="save-action" type="button">Download your pizza ↓</button><div class="tool-hint">Download a PNG with your toppings and your pizza name.</div>`;
   }
@@ -165,29 +169,9 @@
     c.restore();
   }
   function sauceColor(id) { return SAUCES.find(x => x.id === id)?.color || '#b8543d'; }
-  function drawSauce(c, s) {
-    if (!s.sauceStrokes.length) return;
-    const radius = innerRadius(s) - 8;
-    c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.clip();
-    // Keep the hand-painted marks visible while painting, then finish the layer
-    // when the player advances. The last sauce used determines its final color.
-    if (s.step >= 2) {
-      const kind = s.sauceStrokes.at(-1).kind;
-      const fill = c.createRadialGradient(CENTER.x-42,CENTER.y-56,15,CENTER.x,CENTER.y,radius);
-      if (kind === 'pesto') { fill.addColorStop(0,'#8a9d68'); fill.addColorStop(1,'#547046'); }
-      else if (kind === 'cream') { fill.addColorStop(0,'#f3e3bf'); fill.addColorStop(1,'#d7bb84'); }
-      else { fill.addColorStop(0,'#c96445'); fill.addColorStop(1,'#a9402d'); }
-      c.fillStyle=fill; c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.fill();
-      if (kind === 'tomato' && paintStamps.complete && paintStamps.naturalWidth) {
-        const cell = paintStamps.naturalWidth / 2;
-        const size = radius * 2.14;
-        c.globalAlpha = .82;
-        c.drawImage(paintStamps,0,0,cell,paintStamps.naturalHeight,CENTER.x-size/2,CENTER.y-size/2,size,size);
-        c.globalAlpha = 1;
-      }
-    }
-    for (const stroke of s.sauceStrokes) {
-      if (!stroke.points.length) continue;
+  function drawSauceStroke(c, stroke) {
+      if (!stroke.points.length) return;
+      c.save();
       c.lineCap='round'; c.lineJoin='round'; c.strokeStyle=sauceColor(stroke.kind); c.fillStyle=sauceColor(stroke.kind); c.lineWidth=stroke.width || 58; c.globalAlpha=.91;
       if (stroke.points.length===1) { c.beginPath(); c.arc(stroke.points[0].x,stroke.points[0].y,c.lineWidth/2,0,Math.PI*2); c.fill(); }
       else { c.beginPath(); c.moveTo(stroke.points[0].x,stroke.points[0].y); for(const p of stroke.points.slice(1)) c.lineTo(p.x,p.y); c.stroke(); }
@@ -201,61 +185,88 @@
           const p = stroke.points[j];
           if (j) travelled += Math.hypot(p.x-stroke.points[j-1].x,p.y-stroke.points[j-1].y);
           if (j === 0 || travelled > 18) {
-            const size = (stroke.width || 58) * (1.22 + random(j+71)*.23);
+            const size = (stroke.width || 58) * (1.22 + random(j+71+(stroke.seed||0))*.23);
             c.drawImage(paintStamps,0,0,cell,paintStamps.naturalHeight,p.x-size/2,p.y-size/2,size,size);
             travelled = 0;
           }
         }
         c.restore();
       }
+      c.restore();
+  }
+  function finishingSauceStrokes(s) {
+    const last=s.sauceStrokes.at(-1), width=last.width||58, radius=innerRadius(s)-8;
+    const strokes=[], spacing=width*.68;
+    for(let y=-radius,row=0;y<=radius+spacing;y+=spacing,row++){
+      const points=[];
+      for(let x=-radius-25;x<=radius+25;x+=17){
+        points.push({x:CENTER.x+x,y:CENTER.y+y+Math.sin(x*.035+row*.8)*2});
+      }
+      strokes.push({kind:last.kind,width,points,seed:row*97});
+    }
+    return strokes;
+  }
+  function drawSauce(c, s) {
+    if (!s.sauceStrokes.length) return;
+    c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,innerRadius(s)-8,0,Math.PI*2); c.clip();
+    // Use the same brush stroke and stamp size for completion as for the player's paint.
+    if(s.step>=2) finishingSauceStrokes(s).forEach(stroke=>drawSauceStroke(c,stroke));
+    s.sauceStrokes.forEach(stroke=>drawSauceStroke(c,stroke));
+    c.restore();
+  }
+  function drawCheeseDab(c, s, d, i) {
+    c.save(); c.translate(d.x,d.y); c.rotate(d.a); const sz=d.size;
+    if (paintStamps.complete && paintStamps.naturalWidth) {
+      const cell=paintStamps.naturalWidth/2, drawSize=sz*1.8;
+      c.globalAlpha=.88; c.drawImage(paintStamps,cell,0,cell,paintStamps.naturalHeight,-drawSize/2,-drawSize/2,drawSize,drawSize);
+      if(s.baked && i%5===0){c.fillStyle='#d8a86285';c.beginPath();c.ellipse(sz*.04,-sz*.08,sz*.17,sz*.08,.4,0,Math.PI*2);c.fill();}
+    } else {
+      c.shadowColor='#754b302c'; c.shadowBlur=3; c.fillStyle=s.baked?'#f7e5bb':'#fff5dc'; c.beginPath(); c.moveTo(-sz*.56,-sz*.23); c.quadraticCurveTo(-sz*.15,-sz*.46,sz*.25,-sz*.18); c.lineTo(sz*.58,sz*.05); c.quadraticCurveTo(sz*.25,sz*.42,-sz*.2,sz*.26); c.closePath(); c.fill();
     }
     c.restore();
+  }
+  function finishingCheeseDabs(s) {
+    const radius=innerRadius(s)-5, density=s.brushSize/58, spacing=Math.max(24,54*density);
+    const dabs=[]; let i=0;
+    for(let y=-radius;y<=radius;y+=spacing){
+      for(let x=-radius;x<=radius;x+=spacing){
+        const px=x+(random(i+321)-.5)*spacing*.35;
+        const py=y+(random(i+627)-.5)*spacing*.35;
+        if(Math.hypot(px,py)<radius+7){
+          dabs.push({x:CENTER.x+px,y:CENTER.y+py,a:random(i+21)*Math.PI*2,size:(55+random(i+33)*15)*density});
+        }
+        i++;
+      }
+    }
+    return dabs;
   }
   function drawCheese(c, s) {
     if (!s.cheeseDabs.length) return;
     c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,innerRadius(s)-5,0,Math.PI*2); c.clip();
-    // A sparse gesture becomes a generous, finished cheese layer on the next step.
-    if (s.step >= 3) {
-      const radius = innerRadius(s)-5;
-      const fill = c.createRadialGradient(CENTER.x-35,CENTER.y-42,18,CENTER.x,CENTER.y,radius);
-      fill.addColorStop(0,s.baked?'#ffe9bac7':'#fff4d6c4');
-      fill.addColorStop(1,s.baked?'#edc985a6':'#f0ddab99');
-      c.fillStyle=fill; c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.fill();
-      if (paintStamps.complete && paintStamps.naturalWidth) {
-        const cell=paintStamps.naturalWidth/2, size=radius*2.04;
-        c.globalAlpha=.94;
-        c.drawImage(paintStamps,cell,0,cell,paintStamps.naturalHeight,CENTER.x-size/2,CENTER.y-size/2,size,size);
-        c.globalAlpha=1;
-      }
-      if (s.baked) {
-        for (let i=0;i<42;i++) {
-          const angle=random(i+219)*Math.PI*2, distance=Math.sqrt(random(i+289))*radius*.91;
-          const x=CENTER.x+Math.cos(angle)*distance, y=CENTER.y+Math.sin(angle)*distance;
-          c.beginPath(); c.ellipse(x,y,3+random(i+332)*8,2+random(i+423)*4,angle,0,Math.PI*2);
-          c.fillStyle=i%3===0?'#bd774957':'#e0aa5d66'; c.fill();
-        }
-      }
-    }
-    s.cheeseDabs.forEach((d,i)=>{ c.save(); c.translate(d.x,d.y); c.rotate(d.a); const sz=d.size;
-      if (paintStamps.complete && paintStamps.naturalWidth) {
-        const cell=paintStamps.naturalWidth/2, drawSize=sz*1.8;
-        c.globalAlpha=.88; c.drawImage(paintStamps,cell,0,cell,paintStamps.naturalHeight,-drawSize/2,-drawSize/2,drawSize,drawSize);
-        if(s.baked && i%5===0){c.fillStyle='#d8a86285';c.beginPath();c.ellipse(sz*.04,-sz*.08,sz*.17,sz*.08,.4,0,Math.PI*2);c.fill();}
-      } else {
-        c.shadowColor='#754b302c'; c.shadowBlur=3; c.fillStyle=s.baked?'#f7e5bb':'#fff5dc'; c.beginPath(); c.moveTo(-sz*.56,-sz*.23); c.quadraticCurveTo(-sz*.15,-sz*.46,sz*.25,-sz*.18); c.lineTo(sz*.58,sz*.05); c.quadraticCurveTo(sz*.25,sz*.42,-sz*.2,sz*.26); c.closePath(); c.fill();
-      }
-      c.restore(); });
+    if(s.step>=3) finishingCheeseDabs(s).forEach((d,i)=>drawCheeseDab(c,s,d,i));
+    s.cheeseDabs.forEach((d,i)=>drawCheeseDab(c,s,d,i));
     c.restore();
   }
   function drawAtlas(c, topping, x, y, size, angle=0) {
     if (!topping) return;
     c.save(); c.translate(x,y); c.rotate(angle);
-    if (atlas.complete && atlas.naturalWidth) { const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2; c.drawImage(atlas,topping.col*sw,topping.row*sh,sw,sh,-size/2,-size/2,size,size); }
+    if (topping.id === 'olive') {
+      const oliveSize=size*.62;
+      c.beginPath(); c.arc(0,0,oliveSize*.45,0,Math.PI*2);
+      c.arc(0,0,oliveSize*.18,0,Math.PI*2,true);
+      c.clip('evenodd');
+      if (singleOlive.complete && singleOlive.naturalWidth) {
+        c.drawImage(singleOlive,340,80,820,820,-oliveSize/2,-oliveSize/2,oliveSize,oliveSize);
+      } else {
+        c.fillStyle='#39291f'; c.fillRect(-oliveSize/2,-oliveSize/2,oliveSize,oliveSize);
+      }
+    }
+    else if (atlas.complete && atlas.naturalWidth) { const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2; c.drawImage(atlas,topping.col*sw,topping.row*sh,sw,sh,-size/2,-size/2,size,size); }
     else { c.fillStyle='#e0b18c';c.beginPath();c.arc(0,0,size*.36,0,Math.PI*2);c.fill(); }
     c.restore();
   }
   function drawToppings(c,s,showSelection) {
-    s.toppings.forEach((item,i)=>{ const topping=TOPPINGS.find(t=>t.id===item.id); const size=104*item.size; drawAtlas(c,topping,item.x,item.y,size,item.angle); if(showSelection && s.step===3 && i===s.selected){ c.save();c.strokeStyle='#fffaf0';c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.arc(item.x,item.y,size*.44,0,Math.PI*2);c.stroke();c.strokeStyle='#a26049';c.lineWidth=1.5;c.beginPath();c.arc(item.x,item.y,size*.44,0,Math.PI*2);c.stroke();c.restore(); } });
+    s.toppings.forEach((item,i)=>{ const topping=TOPPINGS.find(t=>t.id===item.id); const size=104*item.size, visualSize=size*(item.id==='olive'?.62:1); drawAtlas(c,topping,item.x,item.y,size,item.angle); if(showSelection && s.step===3 && i===s.selected){ c.save();c.strokeStyle='#fffaf0';c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.arc(item.x,item.y,visualSize*.44,0,Math.PI*2);c.stroke();c.strokeStyle='#a26049';c.lineWidth=1.5;c.beginPath();c.arc(item.x,item.y,visualSize*.44,0,Math.PI*2);c.stroke();c.restore(); } });
   }
   function drawScene(c,s,showSelection=true) { drawBackground(c); if(!s.base){drawPlaceholder(c);return;} drawCrust(c,s); drawSauce(c,s); drawCheese(c,s); drawToppings(c,s,showSelection); }
   function renderCanvas() { ctx.clearRect(0,0,WIDTH,HEIGHT); drawScene(ctx,state,true); }
@@ -263,8 +274,8 @@
   function canvasPoint(e) { const r=canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*WIDTH/r.width,y:(e.clientY-r.top)*HEIGHT/r.height}; }
   function insidePizza(p, inset=18) { if(!state.base) return false; return Math.hypot(p.x-CENTER.x,p.y-CENTER.y) < innerRadius(state)-inset; }
   function confinePoint(p) { const limit=innerRadius(state)-30; const dx=p.x-CENTER.x,dy=p.y-CENTER.y,dist=Math.hypot(dx,dy); return dist<=limit?p:{x:CENTER.x+dx/dist*limit,y:CENTER.y+dy/dist*limit}; }
-  function hitTopping(p) { for(let i=state.toppings.length-1;i>=0;i--){const t=state.toppings[i];if(Math.hypot(p.x-t.x,p.y-t.y)<(104*t.size*.41))return i;}return -1; }
-  function addCheese(p) { const point=confinePoint(p); const i=state.cheeseDabs.length; const density=state.brushSize/58; state.cheeseDabs.push({x:point.x,y:point.y,a:random(i+21)*Math.PI*2,size:(19+random(i+33)*17)*density}); if(state.cheeseDabs.length>800)state.cheeseDabs.shift(); }
+  function hitTopping(p) { for(let i=state.toppings.length-1;i>=0;i--){const t=state.toppings[i];if(Math.hypot(p.x-t.x,p.y-t.y)<(104*t.size*(t.id==='olive'?.62:1)*.44))return i;}return -1; }
+  function addCheese(p) { const point=confinePoint(p); const i=state.cheeseDabs.length; const density=state.brushSize/58; state.cheeseDabs.push({x:point.x,y:point.y,a:random(i+21)*Math.PI*2,size:(55+random(i+33)*15)*density}); if(state.cheeseDabs.length>800)state.cheeseDabs.shift(); }
   function onPointerDown(e) {
     if (isBaking || !state.base) return;
     const p=canvasPoint(e);
@@ -327,5 +338,6 @@
   rawDough.addEventListener('load',renderCanvas);
   bakedDough.addEventListener('load',renderCanvas);
   paintStamps.addEventListener('load',renderCanvas);
+  singleOlive.addEventListener('load',()=>{renderThumbs();renderCanvas();});
   renderUI();renderCanvas();
 })();
