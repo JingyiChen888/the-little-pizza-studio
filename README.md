@@ -1,38 +1,33 @@
-# 小小披萨工坊
+# The Little Pizza Studio
 
-一个可以直接在浏览器里玩的披萨制作小游戏。按顺序选饼底、抹酱、铺芝士、摆配料、烘烤，最后给作品命名并下载 PNG 图片。
+A browser game for making a pizza, one step at a time. Choose a crust, spread sauce and cheese, place toppings, bake, then name your creation and download a PNG.
 
-## 本地运行
+## Run locally
 
-在这个目录打开终端：
+From this directory, run:
 
 ```sh
 python3 -m http.server 8000 --directory dist
 ```
 
-然后打开 <http://localhost:8000>。项目不需要安装依赖，也不需要账号。直接打开 `dist/index.html` 通常也可以运行，但本地服务器更稳定。
+Then open <http://localhost:8000>. No installation or account is required.
 
-## 玩法
+## How to play
 
-1. 选择经典、薄脆或全麦饼底。
-2. 选酱料，在披萨上按住并拖动。酱只会落在画过的地方。
-3. 在披萨上按住并拖动，逐渐铺上芝士。
-4. 选蘑菇、洋葱等食材，点击披萨摆放；点击已放食材可以缩放、旋转、删除，拖动可以移动。食材菜单和画布使用同一张透明素材图。
-5. 选择烘烤时间并点击开始。烘烤会改变饼底和芝士的外观，已放食材保持在原来的位置。
-6. 输入作品名称，下载包含作品名称的 PNG 图片。
+1. Choose a classic, thin, or whole wheat crust.
+2. Select a sauce, then press and drag on the pizza to spread it.
+3. Press and drag to scatter cheese.
+4. Choose a topping and click the pizza to place it. Select a placed topping to resize, rotate, or remove it; drag it to reposition.
+5. Choose a baking time and select **Start baking**.
+6. Name your pizza and download its PNG image.
 
-每一步由玩家点击「下一步」推进。右侧的「上一步」、画布上的「撤销」和顶部的「重新开始」可用于修改。制作进度自动保存在当前浏览器的本地存储中。
+Sauce and cheese respond to each brush gesture during their steps. When the player moves on, each layer fills out to give the finished pizza a generous, appetizing look. Toppings always stay exactly where the player placed them.
 
-## 文件
+The player advances with **Next**. **Back**, **Undo**, and **Start over** are available for changes. Progress is saved in the current browser's local storage. Baking time is a visual game choice, so no real-time wait is required.
 
-- `dist/`：可直接运行的网站和游戏图片素材。
-- `references/visual-direction.png`：确认过的低饱和工作台视觉方向。
-- `references/steps-01-03.png`、`references/steps-04-06.png`：六步流程效果图。
-- `references/preview-final-visual.png`：实际游戏画面预览。
-- `references/sample-export.png`：从游戏导出的示例图片。
+## Files
 
-流程效果图是设计参考；实际操作和画面以 `dist/` 中的游戏为准。烘烤时间是游戏效果，不需要真实等待。
+- `dist/`: the playable site and image assets.
+- `references/`: visual direction and asset notes.
 
-## 图片素材
-
-饼底、酱料/芝士纹理和配料图由 OpenAI ImageGen 生成。配料图集中在 `dist/assets/toppings-atlas.png`；游戏在菜单和披萨上读取同一个图块，因此放置后不会被重新生成成另一种食材。
+The crust, sauce and cheese textures, and topping artwork were generated with OpenAI ImageGen. Topping buttons and the pizza use the same image atlas, so a topping keeps its appearance when placed.

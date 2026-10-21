@@ -1,8 +1,8 @@
-# ImageGen 素材提示词
+# Image asset notes
 
-生成方式：内置 ImageGen。下列是本项目最终使用素材的提示词主题与约束。
+The project uses images generated with OpenAI ImageGen. These were the visual briefs for the final assets:
 
-1. **配料图集**：透明背景、4 列 × 2 行、同一顶视角与柔和食物插画风格；依次为蘑菇片、洋葱圈、罗勒叶、辣香肠片、小番茄半颗、青椒圈、三片黑橄榄和一块马苏里拉。每项独立居中，不重叠、无标签；运行时在菜单和披萨上裁取同一个图块。
-2. **生饼底**：单张居中的未烘烤经典披萨饼底，顶视图，柔软的隆起边缘、平坦的浅色中心；透明背景，不能有酱、芝士或配料。
-3. **熟饼底**：以前一张生饼底为编辑目标，只改变烘烤颜色与表面质感；保留轮廓、大小和中心位置，中心仍为空白。
-4. **酱料与芝士纹理**：透明背景双格图集；左侧是不规则番茄酱涂抹纹理，右侧是奶油色马苏里拉涂抹纹理。没有饼底、餐盘和文字，作为拖动画笔的重复印章使用。
+1. **Topping atlas:** Transparent background, four columns by two rows, consistent top-down view and soft food illustration style. Mushroom slices, onion rings, basil leaves, pepperoni, halved cherry tomato, green pepper ring, three black olives, and a piece of mozzarella. Each item is isolated and centered, without labels or overlap. The game crops the same atlas cell for both the menu and the pizza.
+2. **Raw crust:** One centered, unbaked classic pizza crust, seen from above, with a soft raised edge and a flat pale center. Transparent background; no sauce, cheese, or toppings.
+3. **Baked crust:** An edit of the raw crust that changes only its baking color and surface texture. Preserve its outline, size, and center position; keep the center empty.
+4. **Sauce and cheese textures:** A two-cell transparent atlas. The left cell is an irregular tomato sauce spread; the right is a creamy mozzarella spread. No crust, plate, or text. Used as brush stamps and as the full finishing layers.

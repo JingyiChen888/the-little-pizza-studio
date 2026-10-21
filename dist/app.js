@@ -17,32 +17,32 @@
   const CENTER = { x: 450, y: 350 };
   const STORAGE_KEY = 'little-pizza-studio-v1';
   const STEPS = [
-    { name: '选饼底', en: 'DOUGH', title: '选一块喜欢的饼底', description: '经典、薄脆或全麦，先决定这张披萨的起点。', tip: '先从右边选择饼底' },
-    { name: '抹酱', en: 'SAUCE', title: '亲手抹上酱料', description: '选一种酱，在披萨上按住并拖动，抹出你喜欢的形状。', tip: '在饼底上按住拖动，酱会沿着手势出现' },
-    { name: '加芝士', en: 'CHEESE', title: '铺上芝士', description: '按住并拖动，芝士只会落在你经过的地方。', tip: '在披萨上拖动，慢慢铺上芝士' },
-    { name: '放配料', en: 'TOPPINGS', title: '把配料一块块放上去', description: '先选食材，再点击披萨。放上去后仍可拖动、旋转和缩放。', tip: '选择食材，点击披萨摆放；拖动已放的食材可移动' },
-    { name: '烘烤', en: 'BAKE', title: '送进烤箱', description: '你摆好的配料会留在原位，饼边和芝士慢慢上色。', tip: '调整时间，点击开始烘烤' },
-    { name: '保存', en: 'SAVE', title: '给作品起个名字', description: '把这张亲手完成的披萨保存成图片。', tip: '取个名字，然后下载作品图片' }
+    { name: 'Crust', en: 'DOUGH', title: 'Choose your crust', description: 'Classic, thin, or whole wheat: choose the starting point for your pizza.', tip: 'Choose a crust on the right' },
+    { name: 'Sauce', en: 'SAUCE', title: 'Spread the sauce', description: 'Choose a sauce, then press and drag to spread it across the pizza.', tip: 'Press and drag on the crust to spread your sauce' },
+    { name: 'Cheese', en: 'CHEESE', title: 'Add the cheese', description: 'Press and drag to scatter cheese by hand. Your finished layer will look deliciously full.', tip: 'Drag over the pizza to scatter cheese' },
+    { name: 'Toppings', en: 'TOPPINGS', title: 'Place your toppings', description: 'Choose an ingredient, then click the pizza. Drag, rotate, or resize it afterward.', tip: 'Choose a topping, click to place it, or drag one to move it' },
+    { name: 'Bake', en: 'BAKE', title: 'Bake your pizza', description: 'Your toppings stay in place while the crust and cheese turn golden.', tip: 'Set the timer, then start baking' },
+    { name: 'Save', en: 'SAVE', title: 'Name your pizza', description: 'Give your handmade pizza a name and save it as an image.', tip: 'Give it a name, then download your image' }
   ];
   const TOPPINGS = [
-    { id: 'mushroom', name: '蘑菇片', col: 0, row: 0 },
-    { id: 'onion', name: '洋葱圈', col: 1, row: 0 },
-    { id: 'basil', name: '罗勒叶', col: 2, row: 0 },
-    { id: 'pepperoni', name: '意式辣香肠', col: 3, row: 0 },
-    { id: 'tomato', name: '小番茄', col: 0, row: 1 },
-    { id: 'pepper', name: '青椒圈', col: 1, row: 1 },
-    { id: 'olive', name: '黑橄榄', col: 2, row: 1 },
-    { id: 'mozzarella', name: '马苏里拉', col: 3, row: 1 }
+    { id: 'mushroom', name: 'Mushroom', col: 0, row: 0 },
+    { id: 'onion', name: 'Onion', col: 1, row: 0 },
+    { id: 'basil', name: 'Basil', col: 2, row: 0 },
+    { id: 'pepperoni', name: 'Pepperoni', col: 3, row: 0 },
+    { id: 'tomato', name: 'Cherry tomato', col: 0, row: 1 },
+    { id: 'pepper', name: 'Green pepper', col: 1, row: 1 },
+    { id: 'olive', name: 'Black olive', col: 2, row: 1 },
+    { id: 'mozzarella', name: 'Mozzarella', col: 3, row: 1 }
   ];
   const SAUCES = [
-    { id: 'tomato', name: '番茄红酱', color: '#b8543d', sub: '微酸、经典' },
-    { id: 'pesto', name: '罗勒青酱', color: '#688559', sub: '清新、香草' },
-    { id: 'cream', name: '奶油白酱', color: '#e8d5a6', sub: '温柔、浓郁' }
+    { id: 'tomato', name: 'Tomato sauce', color: '#b8543d', sub: 'Tangy and classic' },
+    { id: 'pesto', name: 'Basil pesto', color: '#688559', sub: 'Fresh and herby' },
+    { id: 'cream', name: 'Cream sauce', color: '#e8d5a6', sub: 'Mild and rich' }
   ];
   const BASES = [
-    { id: 'classic', name: '经典厚边', sub: '松软、有嚼劲' },
-    { id: 'thin', name: '轻薄脆底', sub: '薄脆、轻盈' },
-    { id: 'wheat', name: '全麦饼底', sub: '谷物香气' }
+    { id: 'classic', name: 'Classic crust', sub: 'Soft and chewy' },
+    { id: 'thin', name: 'Thin crust', sub: 'Light and crisp' },
+    { id: 'wheat', name: 'Whole wheat', sub: 'Warm and nutty' }
   ];
 
   const freshState = () => ({ step: 0, base: null, sauce: 'tomato', sauceStrokes: [], cheeseDabs: [], toppings: [], activeTopping: 'mushroom', selected: -1, toppingSize: 100, brushSize: 58, bakeTime: 8, baked: false, name: '' });
@@ -71,24 +71,24 @@
     return [Boolean(state.base), state.sauceStrokes.length > 0, state.cheeseDabs.length > 0, state.toppings.length > 0, state.baked, false][state.step];
   }
   function feedbackText() {
-    if (state.step === 0) return state.base ? '这块饼底选好了，可以进入抹酱。' : '选好饼底后，你可以进入下一步。';
-    if (state.step === 1) return state.sauceStrokes.length ? '抹得不错！想多抹一点也可以，完成后点下一步。' : '像画画一样，按住披萨并拖动来抹酱。';
-    if (state.step === 2) return state.cheeseDabs.length ? '芝士已经铺上了。想更浓郁就继续撒。' : '拖动手指或鼠标，让芝士落在你想要的位置。';
-    if (state.step === 3) return state.toppings.length ? `已经放了 ${state.toppings.length} 块配料。点选披萨上的食材还能调整。` : '先选右侧食材，再在披萨上点击摆放。';
-    if (state.step === 4) return state.baked ? '出炉啦！配料的位置完整保留，点击下一步命名。' : '选好烘烤时间，点击“开始烘烤”。';
-    return '填写名称后，图片会保存到你的设备。';
+    if (state.step === 0) return state.base ? 'Crust selected. You can move on to the sauce.' : 'Choose a crust to continue.';
+    if (state.step === 1) return state.sauceStrokes.length ? 'Looking good! Add more if you like, then select Next for a full finish.' : 'Press and drag across the pizza to spread sauce.';
+    if (state.step === 2) return state.cheeseDabs.length ? 'Cheese is on! Add a little more, or select Next for a full finish.' : 'Drag your finger or mouse to scatter cheese.';
+    if (state.step === 3) return state.toppings.length ? `${state.toppings.length} toppings placed. Select one on the pizza to adjust it.` : 'Choose a topping on the right, then click the pizza to place it.';
+    if (state.step === 4) return state.baked ? 'Fresh from the oven! Select Next to name your pizza.' : 'Choose a baking time, then select Start baking.';
+    return 'Enter a name, then download the image to your device.';
   }
 
   function renderProgress() {
     $('#progress-list').innerHTML = STEPS.map((s, i) => `<li class="${i === state.step ? 'active' : i < state.step ? 'done' : ''}"><button type="button" data-step="${i}" ${i >= state.step ? 'disabled' : ''} aria-current="${i === state.step ? 'step' : 'false'}"><span class="num">${i < state.step ? '✓' : i + 1}</span><span class="label">${s.name}</span></button></li>`).join('');
   }
   function toolMarkup() {
-    if (state.step === 0) return `<p class="tool-section-label">01 / 选择形状</p><div class="choice-list dough-list">${BASES.map(b => `<button class="choice-card ${state.base === b.id ? 'active' : ''}" type="button" data-base="${b.id}" aria-pressed="${state.base === b.id}"><span class="dough-preview ${b.id}"></span><span><strong>${b.name}</strong><small>${b.sub}</small></span></button>`).join('')}</div><div class="tool-hint">选中后，中央的饼底会立刻变成你选的样子。</div>`;
-    if (state.step === 1) return `<p class="tool-section-label">02 / 选择酱料</p><div class="choice-list">${SAUCES.map(s => `<button class="choice-card ${state.sauce === s.id ? 'active' : ''}" type="button" data-sauce="${s.id}" aria-pressed="${state.sauce === s.id}"><span class="sauce-preview ${s.id}"></span><strong>${s.name}</strong><small>${s.sub}</small></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="brush-size">涂抹宽度</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">从披萨中间向外画圈，酱料会沿着你的轨迹留下来。也可以换一种酱继续涂。</div>`;
-    if (state.step === 2) return `<p class="tool-section-label">03 / 马苏里拉芝士</p><div class="choice-list"><div class="choice-card active" aria-label="马苏里拉芝士"><canvas class="ingredient-thumb" data-topping-thumb="mozzarella" width="130" height="130"></canvas><strong>手撒芝士</strong><small>少量多次，随你决定</small></div></div><div class="control-box"><div class="control-line"><label for="brush-size">撒芝士的密度</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">按住并移动，就像抓一小把芝士撒下去。红酱会从芝士间露出来。</div>`;
-    if (state.step === 3) return `<p class="tool-section-label">04 / 选择食材</p><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? '所选配料大小' : '下一块配料大小'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ 旋转</button><button class="small-tool" type="button" data-edit="rotate-right">旋转 ↷</button><button class="small-tool danger" type="button" data-edit="remove">× 删除</button></div></div><div class="tool-hint">菜单和披萨共用同一张食材图片。点击放置，拖动移动；选中后调整大小或旋转。</div>`;
-    if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? '香喷喷地出炉了！' : '让披萨慢慢上色'}</strong><small>饼边变金黄，配料仍留在原处</small></div><div class="control-line"><label for="bake-time">烘烤时间</label><output id="bake-time-value">${state.bakeTime} 分钟</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ 已烘烤完成' : '开始烘烤　→'}</button><div class="tool-hint">这是游戏里的烘烤动画，不需要等待真实的 ${state.bakeTime} 分钟。</div>`;
-    return `<p class="tool-section-label">06 / 作品卡片</p><div class="bake-card"><span class="oven-emoji">✳</span><strong>一张属于你的披萨</strong><small>连配料的位置都是你亲手决定的</small></div><label class="name-label" for="pizza-name">给作品起个名字</label><input id="pizza-name" class="name-input" type="text" maxlength="26" placeholder="比如：星期天的披萨"><button id="save-action" class="save-action" type="button">保存作品图片 ↓</button><div class="tool-hint">保存为 PNG 图片，包含你摆放的所有食材和作品名称。</div>`;
+    if (state.step === 0) return `<p class="tool-section-label">01 / CHOOSE A CRUST</p><div class="choice-list dough-list">${BASES.map(b => `<button class="choice-card ${state.base === b.id ? 'active' : ''}" type="button" data-base="${b.id}" aria-pressed="${state.base === b.id}"><span class="dough-preview ${b.id}"></span><span><strong>${b.name}</strong><small>${b.sub}</small></span></button>`).join('')}</div><div class="tool-hint">Your choice will appear on the workbench right away.</div>`;
+    if (state.step === 1) return `<p class="tool-section-label">02 / CHOOSE A SAUCE</p><div class="choice-list">${SAUCES.map(s => `<button class="choice-card ${state.sauce === s.id ? 'active' : ''}" type="button" data-sauce="${s.id}" aria-pressed="${state.sauce === s.id}"><span class="sauce-preview ${s.id}"></span><strong>${s.name}</strong><small>${s.sub}</small></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="brush-size">Brush width</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Try spreading from the center outward. A light spread fills out beautifully when you move on.</div>`;
+    if (state.step === 2) return `<p class="tool-section-label">03 / MOZZARELLA</p><div class="choice-list"><div class="choice-card active" aria-label="Mozzarella cheese"><canvas class="ingredient-thumb" data-topping-thumb="mozzarella" width="130" height="130"></canvas><strong>Hand-scattered cheese</strong><small>Add as much as you like</small></div></div><div class="control-box"><div class="control-line"><label for="brush-size">Cheese brush size</label><output id="brush-size-value">${state.brushSize}px</output></div><input id="brush-size" type="range" min="28" max="92" value="${state.brushSize}"></div><div class="tool-hint">Press and drag to scatter cheese. The finished layer will be generous, with hints of sauce showing through.</div>`;
+    if (state.step === 3) return `<p class="tool-section-label">04 / CHOOSE TOPPINGS</p><div class="choice-list">${TOPPINGS.map(t => `<button class="choice-card ${state.activeTopping === t.id ? 'active' : ''}" type="button" data-topping="${t.id}" aria-pressed="${state.activeTopping === t.id}"><canvas class="ingredient-thumb" data-topping-thumb="${t.id}" width="130" height="130"></canvas><strong>${t.name}</strong></button>`).join('')}</div><div class="control-box"><div class="control-line"><label for="topping-size">${state.selected >= 0 ? 'Selected topping size' : 'Next topping size'}</label><output id="topping-size-value">${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}%</output></div><input id="topping-size" type="range" min="55" max="155" value="${state.selected >= 0 ? Math.round(state.toppings[state.selected].size * 100) : state.toppingSize}"><div class="selected-tools"><button class="small-tool" type="button" data-edit="rotate-left">↶ Rotate</button><button class="small-tool" type="button" data-edit="rotate-right">Rotate ↷</button><button class="small-tool danger" type="button" data-edit="remove">× Remove</button></div></div><div class="tool-hint">The menu and pizza use the same topping artwork. Click to place, drag to move, then resize or rotate.</div>`;
+    if (state.step === 4) return `<div class="bake-card"><span class="oven-emoji">♨</span><strong>${state.baked ? 'Fresh from the oven!' : 'Watch your pizza turn golden'}</strong><small>The crust browns while toppings stay in place</small></div><div class="control-line"><label for="bake-time">Baking time</label><output id="bake-time-value">${state.bakeTime} min</output></div><input id="bake-time" type="range" min="6" max="12" value="${state.bakeTime}" ${state.baked ? 'disabled' : ''}><button id="bake-action" class="bake-action" type="button" ${state.baked || isBaking ? 'disabled' : ''}>${state.baked ? '✓ Baked' : 'Start baking →'}</button><div class="tool-hint">This is a quick game animation; no need to wait ${state.bakeTime} real minutes.</div>`;
+    return `<p class="tool-section-label">06 / YOUR PIZZA</p><div class="bake-card"><span class="oven-emoji">✳</span><strong>A pizza made by you</strong><small>Every topping is right where you placed it</small></div><label class="name-label" for="pizza-name">Name your pizza</label><input id="pizza-name" class="name-input" type="text" maxlength="26" placeholder="e.g. Sunday Special"><button id="save-action" class="save-action" type="button">Download your pizza ↓</button><div class="tool-hint">Download a PNG with your toppings and your pizza name.</div>`;
   }
   function renderThumbs() {
     document.querySelectorAll('[data-topping-thumb]').forEach(el => {
@@ -107,15 +107,15 @@
     $('#tool-step').textContent = `STEP ${String(state.step + 1).padStart(2, '0')} / 06`;
     $('#tool-title').textContent = stage.name;
     $('#tool-description').textContent = stage.description;
-    $('#canvas-tip').textContent = state.step === 4 && state.baked ? '烤好啦，点击下一步给作品起名字' : stage.tip;
+    $('#canvas-tip').textContent = state.step === 4 && state.baked ? 'All baked! Select Next to name your pizza' : stage.tip;
     $('#canvas-tip').hidden = state.step === 5;
-    $('#work-status').textContent = state.step === 5 ? '完成作品' : canContinue() ? '可以进入下一步' : '正在制作';
-    $('#piece-count').textContent = `${state.toppings.length} 块配料`;
+    $('#work-status').textContent = state.step === 5 ? 'Pizza complete' : canContinue() ? 'Ready for the next step' : 'In progress';
+    $('#piece-count').textContent = `${state.toppings.length} toppings`;
     $('#feedback').textContent = feedbackText();
     $('#back').disabled = state.step === 0 || isBaking;
     $('#undo').disabled = undoStack.length === 0 || isBaking;
     $('#next').disabled = !canContinue() || isBaking;
-    $('#next').innerHTML = state.step === 5 ? '已完成' : '下一步 <span>→</span>';
+    $('#next').innerHTML = state.step === 5 ? 'Complete' : 'Next <span>→</span>';
     $('#tool-content').innerHTML = toolMarkup();
     if (state.step === 5) $('#pizza-name').value = state.name;
     renderThumbs();
@@ -136,7 +136,7 @@
   }
   function drawPlaceholder(c) {
     c.save(); c.strokeStyle = '#f8e6c6a8'; c.lineWidth = 3; c.setLineDash([8, 12]); c.beginPath(); c.arc(CENTER.x, CENTER.y, 257, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
-    c.fillStyle = '#fff0d1c9'; c.textAlign = 'center'; c.font = '600 27px "Noto Serif SC", serif'; c.fillText('一张披萨，从这里开始', CENTER.x, CENTER.y - 5); c.font = '14px "Noto Sans SC", sans-serif'; c.fillText('选择右侧饼底，看它出现在工作台上', CENTER.x, CENTER.y + 27); c.restore();
+    c.fillStyle = '#fff0d1c9'; c.textAlign = 'center'; c.font = '600 27px Fraunces, serif'; c.fillText('Your pizza starts here', CENTER.x, CENTER.y - 5); c.font = '14px "DM Sans", sans-serif'; c.fillText('Choose a crust on the right to begin', CENTER.x, CENTER.y + 27); c.restore();
   }
   function pizzaRadius(s) { return s.base === 'thin' ? 244 : 260; }
   function innerRadius(s) { return pizzaRadius(s) - (s.base === 'thin' ? 28 : 42); }
@@ -167,7 +167,25 @@
   function sauceColor(id) { return SAUCES.find(x => x.id === id)?.color || '#b8543d'; }
   function drawSauce(c, s) {
     if (!s.sauceStrokes.length) return;
-    c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,innerRadius(s)-8,0,Math.PI*2); c.clip();
+    const radius = innerRadius(s) - 8;
+    c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.clip();
+    // Keep the hand-painted marks visible while painting, then finish the layer
+    // when the player advances. The last sauce used determines its final color.
+    if (s.step >= 2) {
+      const kind = s.sauceStrokes.at(-1).kind;
+      const fill = c.createRadialGradient(CENTER.x-42,CENTER.y-56,15,CENTER.x,CENTER.y,radius);
+      if (kind === 'pesto') { fill.addColorStop(0,'#8a9d68'); fill.addColorStop(1,'#547046'); }
+      else if (kind === 'cream') { fill.addColorStop(0,'#f3e3bf'); fill.addColorStop(1,'#d7bb84'); }
+      else { fill.addColorStop(0,'#c96445'); fill.addColorStop(1,'#a9402d'); }
+      c.fillStyle=fill; c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.fill();
+      if (kind === 'tomato' && paintStamps.complete && paintStamps.naturalWidth) {
+        const cell = paintStamps.naturalWidth / 2;
+        const size = radius * 2.14;
+        c.globalAlpha = .82;
+        c.drawImage(paintStamps,0,0,cell,paintStamps.naturalHeight,CENTER.x-size/2,CENTER.y-size/2,size,size);
+        c.globalAlpha = 1;
+      }
+    }
     for (const stroke of s.sauceStrokes) {
       if (!stroke.points.length) continue;
       c.lineCap='round'; c.lineJoin='round'; c.strokeStyle=sauceColor(stroke.kind); c.fillStyle=sauceColor(stroke.kind); c.lineWidth=stroke.width || 58; c.globalAlpha=.91;
@@ -194,7 +212,30 @@
     c.restore();
   }
   function drawCheese(c, s) {
+    if (!s.cheeseDabs.length) return;
     c.save(); c.beginPath(); c.arc(CENTER.x,CENTER.y,innerRadius(s)-5,0,Math.PI*2); c.clip();
+    // A sparse gesture becomes a generous, finished cheese layer on the next step.
+    if (s.step >= 3) {
+      const radius = innerRadius(s)-5;
+      const fill = c.createRadialGradient(CENTER.x-35,CENTER.y-42,18,CENTER.x,CENTER.y,radius);
+      fill.addColorStop(0,s.baked?'#ffe9bac7':'#fff4d6c4');
+      fill.addColorStop(1,s.baked?'#edc985a6':'#f0ddab99');
+      c.fillStyle=fill; c.beginPath(); c.arc(CENTER.x,CENTER.y,radius,0,Math.PI*2); c.fill();
+      if (paintStamps.complete && paintStamps.naturalWidth) {
+        const cell=paintStamps.naturalWidth/2, size=radius*2.04;
+        c.globalAlpha=.94;
+        c.drawImage(paintStamps,cell,0,cell,paintStamps.naturalHeight,CENTER.x-size/2,CENTER.y-size/2,size,size);
+        c.globalAlpha=1;
+      }
+      if (s.baked) {
+        for (let i=0;i<42;i++) {
+          const angle=random(i+219)*Math.PI*2, distance=Math.sqrt(random(i+289))*radius*.91;
+          const x=CENTER.x+Math.cos(angle)*distance, y=CENTER.y+Math.sin(angle)*distance;
+          c.beginPath(); c.ellipse(x,y,3+random(i+332)*8,2+random(i+423)*4,angle,0,Math.PI*2);
+          c.fillStyle=i%3===0?'#bd774957':'#e0aa5d66'; c.fill();
+        }
+      }
+    }
     s.cheeseDabs.forEach((d,i)=>{ c.save(); c.translate(d.x,d.y); c.rotate(d.a); const sz=d.size;
       if (paintStamps.complete && paintStamps.naturalWidth) {
         const cell=paintStamps.naturalWidth/2, drawSize=sz*1.8;
@@ -244,28 +285,28 @@
   function changeStep(to) { if(to<0||to>5||isBaking)return;if(to<4&&state.baked){remember();state.baked=false;}state.step=to;state.selected=-1;commit(); }
   function undo() { if(!undoStack.length || isBaking)return;state=JSON.parse(undoStack.pop());commit(); }
   function downloadImage() {
-    const name=($('#pizza-name')?.value||'').trim()||'我的披萨';state.name=name;persist();
+    const name=($('#pizza-name')?.value||'').trim()||'My Pizza';state.name=name;persist();
     const out=document.createElement('canvas');out.width=1400;out.height=1260;const c=out.getContext('2d');c.fillStyle='#faf6ed';c.fillRect(0,0,out.width,out.height);
     c.fillStyle='#61765e';c.font='700 19px "DM Sans",sans-serif';c.letterSpacing='4px';c.fillText('THE LITTLE PIZZA STUDIO',105,80);
     c.save();c.translate(115,130);c.scale(1.3,1.3);drawScene(c,{...state,selected:-1},false);c.restore();
-    c.fillStyle='#354638';c.font='600 47px "Noto Serif SC",serif';c.fillText(name,105,1130);
-    c.fillStyle='#9aa390';c.font='18px "Noto Sans SC",sans-serif';c.fillText('一张披萨，一点想象。',107,1170);
-    c.textAlign='right';c.fillText(new Date().toLocaleDateString('zh-CN'),1295,1170);
+    c.fillStyle='#354638';c.font='600 47px Fraunces,serif';c.fillText(name,105,1130);
+    c.fillStyle='#9aa390';c.font='18px "DM Sans",sans-serif';c.fillText('One pizza, a little imagination.',107,1170);
+    c.textAlign='right';c.fillText(new Date().toLocaleDateString('en-US'),1295,1170);
     out.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${name.replace(/[\\/:*?"<>|]/g,'-')}.png`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);},'image/png');
-    $('#feedback').textContent=`「${name}」已经开始下载。`;
+    $('#feedback').textContent=`Downloading ${name}.`;
   }
 
   document.querySelector('#tool-content').addEventListener('click',e=>{
     const base=e.target.closest('[data-base]');if(base){remember();state.base=base.dataset.base;commit();return;}
     const sauce=e.target.closest('[data-sauce]');if(sauce){state.sauce=sauce.dataset.sauce;commit();return;}
     const topping=e.target.closest('[data-topping]');if(topping){state.activeTopping=topping.dataset.topping;state.selected=-1;commit();return;}
-    const edit=e.target.closest('[data-edit]');if(edit){if(state.selected<0){$('#feedback').textContent='先点击披萨上的一块配料，再调整它。';return;}remember();const item=state.toppings[state.selected];if(edit.dataset.edit==='rotate-left')item.angle-=Math.PI/12;if(edit.dataset.edit==='rotate-right')item.angle+=Math.PI/12;if(edit.dataset.edit==='remove'){state.toppings.splice(state.selected,1);state.selected=-1;}commit();return;}
+    const edit=e.target.closest('[data-edit]');if(edit){if(state.selected<0){$('#feedback').textContent='Select a topping on the pizza before editing it.';return;}remember();const item=state.toppings[state.selected];if(edit.dataset.edit==='rotate-left')item.angle-=Math.PI/12;if(edit.dataset.edit==='rotate-right')item.angle+=Math.PI/12;if(edit.dataset.edit==='remove'){state.toppings.splice(state.selected,1);state.selected=-1;}commit();return;}
     if(e.target.closest('#bake-action')){if(state.baked||isBaking)return;remember();isBaking=true;$('#oven-overlay').hidden=false;renderUI();setTimeout(()=>{state.baked=true;isBaking=false;$('#oven-overlay').hidden=true;commit();},1500);return;}
     if(e.target.closest('#save-action'))downloadImage();
   });
   document.querySelector('#tool-content').addEventListener('input',e=>{
     if(e.target.id==='brush-size'){state.brushSize=Number(e.target.value);$('#brush-size-value').textContent=`${state.brushSize}px`;persist();}
-    if(e.target.id==='bake-time'){state.bakeTime=Number(e.target.value);$('#bake-time-value').textContent=`${state.bakeTime} 分钟`;persist();}
+    if(e.target.id==='bake-time'){state.bakeTime=Number(e.target.value);$('#bake-time-value').textContent=`${state.bakeTime} min`;persist();}
     if(e.target.id==='topping-size'){if(!sizeSession&&state.selected>=0){remember();sizeSession=true;}const value=Number(e.target.value);state.toppingSize=value;if(state.selected>=0)state.toppings[state.selected].size=value/100;$('#topping-size-value').textContent=`${value}%`;persist();renderCanvas();}
     if(e.target.id==='pizza-name'){state.name=e.target.value;persist();}
   });
