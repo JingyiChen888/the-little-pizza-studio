@@ -50,7 +50,9 @@
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (!saved || !Array.isArray(saved.sauceStrokes) || !Array.isArray(saved.cheeseDabs) || !Array.isArray(saved.toppings)) return freshState();
-      return { ...freshState(), ...saved, selected: -1, step: Math.max(0, Math.min(5, Number(saved.step) || 0)) };
+      const restored = { ...freshState(), ...saved, selected: -1, step: Math.max(0, Math.min(5, Number(saved.step) || 0)) };
+      if (restored.step < 4) restored.baked = false;
+      return restored;
     } catch { return freshState(); }
   }
   let state = restore();
@@ -239,7 +241,7 @@
   }
   function onPointerUp() { if(!pointerMode)return;pointerMode=null;lastPaintPoint=null;pointerMoved=false;commit(); }
 
-  function changeStep(to) { if(to<0||to>5||isBaking)return;state.step=to;state.selected=-1;commit(); }
+  function changeStep(to) { if(to<0||to>5||isBaking)return;if(to<4&&state.baked){remember();state.baked=false;}state.step=to;state.selected=-1;commit(); }
   function undo() { if(!undoStack.length || isBaking)return;state=JSON.parse(undoStack.pop());commit(); }
   function downloadImage() {
     const name=($('#pizza-name')?.value||'').trim()||'我的披萨';state.name=name;persist();
