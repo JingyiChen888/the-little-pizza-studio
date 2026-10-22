@@ -10,7 +10,9 @@ The main interaction is direct: choose a crust, brush on sauce and cheese, and p
 
 ## Screenshot
 
-![A mushroom placed partly over a black olive during the toppings step](references/preview-toppings-overlap.png)
+![A finished pizza exported from The Little Pizza Studio](references/readme-showcase.png)
+
+This finished pizza image was exported from the playable game.
 
 ## Run locally
 
