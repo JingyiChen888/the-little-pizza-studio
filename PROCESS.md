@@ -21,10 +21,10 @@ I changed navigation back to the first step to clear the pizza, saved progress, 
 
 ## Error case checked
 
-A Codex-assisted Chrome check covered the first-step case where the player has not chosen a crust. **Next** remained disabled and the feedback said “Choose a crust to continue.” After choosing Classic crust, **Next** became available and the feedback confirmed the choice. This prevents the player from entering the sauce step without a pizza base.
+The first-step error case was checked in Chrome with no crust selected. **Next** remained disabled and the feedback said “Choose a crust to continue.” After choosing Classic crust, **Next** became available and the feedback confirmed the choice. This prevents the player from entering the sauce step without a pizza base.
 
 ## AI tools and sources
 
-OpenAI ImageGen generated the food images from the briefs in [`references/asset-prompts.md`](references/asset-prompts.md). OpenAI Codex helped create and revise the HTML, CSS, JavaScript, English interface text, documentation, and browser checks. I reviewed the results and requested changes when the colors felt too vivid, when automatic filling did not match the player's marks, and when pesto and cream sauce lacked texture. I adopted the friend's reset and overlap requests and used separate place and edit controls to keep topping adjustment possible.
+The AI image tool ImageGen generated the food images from the briefs in [`references/asset-prompts.md`](references/asset-prompts.md). The AI coding assistant Codex helped create and revise the HTML, CSS, JavaScript, English interface text, documentation, and browser checks. I reviewed the results and requested changes when the colors felt too vivid, when automatic filling did not match the player's marks, and when pesto and cream sauce lacked texture. I adopted the friend's reset and overlap requests and used separate place and edit controls to keep topping adjustment possible.
 
 DM Sans and Fraunces are loaded from Google Fonts. The source code and image assets needed to run the game are included in the repository. Git commits record the earlier implementation stages and revisions.
