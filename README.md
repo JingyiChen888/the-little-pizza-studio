@@ -14,6 +14,8 @@ The main interaction is direct: choose a crust, brush on sauce and cheese, and p
 
 This finished pizza image was exported from the playable game.
 
+Screenshots after each step: [1. Crust](references/step-01-crust.png) · [2. Sauce](references/step-02-sauce.png) · [3. Cheese](references/step-03-cheese.png) · [4. Toppings](references/step-04-toppings.png) · [5. Bake](references/step-05-baked.png) · [6. Save](references/step-06-save.png). An [example exported PNG](references/readme-showcase.png) is also available.
+
 ## Run locally
 
 From the repository root, run:
@@ -51,4 +53,4 @@ Sauce and cheese appear where the player brushes. When the player moves forward,
 - `.github/workflows/deploy-pizza.yml`: publishes the game in `dist/` to GitHub Pages when `main` is updated.
 - `PROCESS.md`: design iterations, the human tryout, and AI tool use.
 
-The food images were made with the AI image tool ImageGen; their briefs are documented in [`references/asset-prompts.md`](references/asset-prompts.md). The interface loads [DM Sans](https://fonts.google.com/specimen/DM+Sans) and [Fraunces](https://fonts.google.com/specimen/Fraunces) from Google Fonts. The game code, interface text, and documentation were developed with the AI coding assistant Codex and revised through review and player feedback. All assets needed to play are included in this repository.
+The food images were made with the AI image tool ImageGen; their briefs are documented in [`references/asset-prompts.md`](references/asset-prompts.md). The interface loads [DM Sans](https://fonts.google.com/specimen/DM+Sans) and [Fraunces](https://fonts.google.com/specimen/Fraunces) from Google Fonts. I came up with the concept and six-step flow, directed the visual style, tested the interaction, and chose changes based on a friend's tryout. Codex assisted with creating and revising the HTML, CSS, JavaScript, English interface text, and documentation; the decisions and revisions are described in [`PROCESS.md`](PROCESS.md). All assets needed to play are included in this repository.
