@@ -17,7 +17,7 @@ The central design goal was for actions to have visible consequences. A brush st
 
 A friend tried the game through the toppings step. They tried returning to the first step after placing toppings and expected to see an empty pizza with only the crust choice available. Instead, earlier work was still present. They also tried to put a mushroom partly over an olive. Their click selected the olive, leaving them unsure how to make an overlapping placement.
 
-I changed navigation back to the first step to clear the pizza, saved progress, and Undo history. I also separated **Place toppings** and **Move & edit**. In place mode, a click always adds the chosen topping at that position, including over another topping; edit mode handles selection and movement. A Codex-assisted browser check confirmed the olive-and-mushroom overlap and the empty first step after returning from toppings. The friend has not yet retested these revisions.
+I changed navigation back to the first step to clear the pizza, saved progress, and Undo history. I also separated **Place toppings** and **Move & edit**. In place mode, a click always adds the chosen topping at that position, including over another topping; edit mode handles selection and movement. A Codex-assisted browser check confirmed the olive-and-mushroom overlap and the empty first step after returning from toppings.
 
 ## Error case checked
 
